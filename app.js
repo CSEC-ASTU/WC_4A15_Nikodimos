@@ -107,11 +107,11 @@ app.post("/auth/local/signup", async (req, res) => {
     req.flash("error", "Account not created. Password must be 7+ characters long");
     return res.redirect("/local/signup");
   }
-  const user=await UserService.getUserByEmail(email);
-  if ( !user) {
-    req.flash("error", "Please use another email to sign up this email already exist");
-    return res.redirect("/local/signup");
-  }
+  // const user=await UserService.getUserByEmail(email);
+  // if ( user) {
+  //   req.flash("error", "Please use another email to sign up this email already exist");
+  //   return res.redirect("/local/signup");
+  // }
     
 
   const hashedPassword = await bcrypt.hash(password, 10)
@@ -124,12 +124,13 @@ app.post("/auth/local/signup", async (req, res) => {
       lastName: last_name,
       password: hashedPassword
     })
+    res.redirect("/local/signin")
   } catch (e) {
     req.flash("error", "Error creating a new account. Try a different login method.");
     res.redirect("/local/signup")
   }
 
-  res.redirect("/local/signin")
+  
 });
 
 app.post("/auth/local/signin",

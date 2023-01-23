@@ -11,6 +11,8 @@ const session = require("express-session");
 const uuid = require("uuid");
 const bcrypt = require("bcrypt");
 const UserService = require("./src/user");
+const passwordComplexity = require("joi-password-complexity");
+
 
 require("./src/config/passport");
 require("./src/config/local");
@@ -102,9 +104,10 @@ app.get("/auth/logout", (req, res) => {
 
 app.post("/auth/local/signup", async (req, res) => {
   const { first_name, last_name, email, password } = req.body
-
-  if (password.length < 8) {
-    req.flash("error", "Account not created. Password must be 7+ characters long");
+  const validate=passwordComplexity(undefined,'password').validate(password);
+  
+  if (validate.error) {
+    req.flash("error", validate.error.details[0].message);
     return res.redirect("/local/signup");
   }
   // const user=await UserService.getUserByEmail(email);
